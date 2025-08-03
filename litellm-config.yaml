@@ -1,0 +1,59 @@
+# Litellm config used in tests
+model_list:
+  - model_name: claude-sonnet-4
+    litellm_params:
+      model: claude-sonnet-4-20250514
+      api_key: os.environ/ANTHROPIC_API_KEY
+      rpm: 50
+
+  - model_name: groq-llama-3.1-8b # 128k in: $0.05 out: $0.08
+    litellm_params:
+      model: groq/llama-3.1-8b-instant
+      api_key: os.environ/GROQ_API_KEY
+
+  # EMBEDDING
+  - model_name: mistral-embed
+    litellm_params:
+      model: mistral/mistral-embed
+      api_key: os.environ/MISTRAL_API_KEY
+
+  # AUDIO
+  - model_name: whisper
+    litellm_params:
+      model: whisper-1
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: audio_transcription
+
+  - model_name: deepgram-nova-2
+    litellm_params:
+      model: deepgram/nova-2
+      api_key: os.environ/DEEPGRAM_API_KEY
+    model_info:
+      mode: audio_transcription
+
+  - model_name: tts
+    litellm_params:
+      model: openai/tts-1
+      api_key: os.environ/OPENAI_API_KEY
+
+  - model_name: "*"
+    litellm_params:
+      model: "*"
+
+litellm_settings:
+  drop_params: True
+  request_timeout: 300 # (int) llm requesttimeout in seconds.
+
+general_settings:
+  master_key: sk-1234
+  database_url: "postgresql://litellm:litellm@postgresql:5432/litellm"
+  store_model_in_db: true
+  store_prompts_in_spend_logs: true
+
+router_settings:
+
+mcp_servers:
+  mcp_bobik:
+    url: "http://mcp-bobik:5000/sse"
+    transport: sse

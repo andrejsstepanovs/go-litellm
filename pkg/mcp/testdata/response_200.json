@@ -1,0 +1,272 @@
+{
+  "tools": [
+    {
+      "name": "mcp_bobik-calendar_events",
+      "title": null,
+      "description": "Fetch a human-readable calendar summary for a given user and time range.",
+      "inputSchema": {
+        "properties": {
+          "time_range": {
+            "description": "Time range ('today', 'tomorrow', 'week', 'month')",
+            "type": "string"
+          },
+          "user_id": {
+            "description": "User ID for calendar lookup",
+            "type": "string"
+          },
+          "user_timezone": {
+            "description": "Timezone of the user (e.g., 'Europe/Riga', 'America/New_York')",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "user_timezone",
+          "time_range"
+        ],
+        "type": "object"
+      },
+      "outputSchema": null,
+      "annotations": null,
+      "_meta": null,
+      "mcp_info": {
+        "server_name": "mcp_bobik",
+        "description": null
+      }
+    },
+    {
+      "name": "mcp_bobik-current_time",
+      "title": null,
+      "description": "Get current date and time for specific location.",
+      "inputSchema": {
+        "properties": {
+          "timezone": {
+            "description": "location name corresponding to a file in the IANA Time Zone database, such as \"America/New_York\" or \"Europe/Berlin\" or \"UTC\"",
+            "type": "string"
+          }
+        },
+        "required": [
+          "timezone"
+        ],
+        "type": "object"
+      },
+      "outputSchema": null,
+      "annotations": null,
+      "_meta": null,
+      "mcp_info": {
+        "server_name": "mcp_bobik",
+        "description": null
+      }
+    },
+    {
+      "name": "mcp_bobik-current_weather",
+      "title": null,
+      "description": "Get current weather. Use it always to get current weather information.",
+      "inputSchema": {
+        "properties": {
+          "city": {
+            "description": "Name of the 1 city. Example: 'Berlin', 'Riga', 'London'.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "city"
+        ],
+        "type": "object"
+      },
+      "outputSchema": null,
+      "annotations": null,
+      "_meta": null,
+      "mcp_info": {
+        "server_name": "mcp_bobik",
+        "description": null
+      }
+    },
+    {
+      "name": "mcp_bobik-weather_forecast_daily",
+      "title": null,
+      "description": "Get daily weather forecast for a specific city.",
+      "inputSchema": {
+        "properties": {
+          "city": {
+            "description": "Name of the 1 city. Example: 'Berlin', 'Riga', 'London'.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "city"
+        ],
+        "type": "object"
+      },
+      "outputSchema": null,
+      "annotations": null,
+      "_meta": null,
+      "mcp_info": {
+        "server_name": "mcp_bobik",
+        "description": null
+      }
+    },
+    {
+      "name": "mcp_bobik-weather_forecast_hourly",
+      "title": null,
+      "description": "Returns 12-hour weather forecast for a specified city.",
+      "inputSchema": {
+        "properties": {
+          "city": {
+            "description": "Name of the 1 city. Example: 'Berlin', 'Riga', 'London'.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "city"
+        ],
+        "type": "object"
+      },
+      "outputSchema": null,
+      "annotations": null,
+      "_meta": null,
+      "mcp_info": {
+        "server_name": "mcp_bobik",
+        "description": null
+      }
+    },
+    {
+      "name": "mcp_bobik-wiki_search",
+      "title": null,
+      "description": "Search Wikipedia and get article content. The more precise the query, the better the results.",
+      "inputSchema": {
+        "properties": {
+          "query": {
+            "description": "Search query for Wikipedia. Example: 'MCP Server'",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "outputSchema": null,
+      "annotations": null,
+      "_meta": null,
+      "mcp_info": {
+        "server_name": "mcp_bobik",
+        "description": null
+      }
+    },
+    {
+      "name": "mcp_bobik-wolfram_math",
+      "title": null,
+      "description": "Answer math questions using Wolfram Alpha computational engine.",
+      "inputSchema": {
+        "properties": {
+          "question": {
+            "description": "Math question to solve (e.g., 'What is 2 + 2?', 'Solve x^2 + 5x + 6 = 0')",
+            "type": "string"
+          },
+          "user_id": {
+            "description": "User ID for request tracking",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "question"
+        ],
+        "type": "object"
+      },
+      "outputSchema": null,
+      "annotations": null,
+      "_meta": null,
+      "mcp_info": {
+        "server_name": "mcp_bobik",
+        "description": null
+      }
+    },
+    {
+      "name": "deepwiki-read_wiki_structure",
+      "title": null,
+      "description": "Get a list of documentation topics for a GitHub repository",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repoName": {
+            "type": "string",
+            "description": "GitHub repository: owner/repo (e.g. \"facebook/react\")"
+          }
+        },
+        "required": [
+          "repoName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": null,
+      "annotations": null,
+      "_meta": null,
+      "mcp_info": {
+        "server_name": "deepwiki",
+        "description": null
+      }
+    },
+    {
+      "name": "deepwiki-read_wiki_contents",
+      "title": null,
+      "description": "View documentation about a GitHub repository",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repoName": {
+            "type": "string",
+            "description": "GitHub repository: owner/repo (e.g. \"facebook/react\")"
+          }
+        },
+        "required": [
+          "repoName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": null,
+      "annotations": null,
+      "_meta": null,
+      "mcp_info": {
+        "server_name": "deepwiki",
+        "description": null
+      }
+    },
+    {
+      "name": "deepwiki-ask_question",
+      "title": null,
+      "description": "Ask any question about a GitHub repository",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repoName": {
+            "type": "string",
+            "description": "GitHub repository: owner/repo (e.g. \"facebook/react\")"
+          },
+          "question": {
+            "type": "string",
+            "description": "The question to ask about the repository"
+          }
+        },
+        "required": [
+          "repoName",
+          "question"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": null,
+      "annotations": null,
+      "_meta": null,
+      "mcp_info": {
+        "server_name": "deepwiki",
+        "description": null
+      }
+    }
+  ],
+  "error": null,
+  "message": "Successfully retrieved tools"
+}
