@@ -1,6 +1,6 @@
 package request
 
-import "github.com/andrejsstepanovs/go-litellm/pkg/json_schema"
+import "github.com/andrejsstepanovs/go-litellm/json_schema"
 
 // ResponseFormat represents the response_format field in LiteLLM API requests
 type ResponseFormat struct {

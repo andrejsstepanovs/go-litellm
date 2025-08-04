@@ -7,9 +7,10 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/client"
-	"github.com/andrejsstepanovs/go-litellm/pkg/mcp"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/andrejsstepanovs/go-litellm/client"
+	"github.com/andrejsstepanovs/go-litellm/mcp"
 )
 
 func Test_Tools_Functional(t *testing.T) {

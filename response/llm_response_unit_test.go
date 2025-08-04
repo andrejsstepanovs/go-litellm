@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/response"
+	"github.com/andrejsstepanovs/go-litellm/response"
 )
 
 func Test_Choice_Unit(t *testing.T) {

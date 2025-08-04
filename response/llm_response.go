@@ -1,8 +1,8 @@
 package response
 
 import (
-	"github.com/andrejsstepanovs/go-litellm/pkg/common"
-	"github.com/andrejsstepanovs/go-litellm/pkg/models"
+	"github.com/andrejsstepanovs/go-litellm/common"
+	"github.com/andrejsstepanovs/go-litellm/models"
 )
 
 type FinishReasonType string

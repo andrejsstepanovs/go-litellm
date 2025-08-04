@@ -1,6 +1,6 @@
 package request
 
-import "github.com/andrejsstepanovs/go-litellm/pkg/mcp"
+import "github.com/andrejsstepanovs/go-litellm/mcp"
 
 const FunctionToolType = "function"
 

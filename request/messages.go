@@ -5,8 +5,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/common"
-	"github.com/andrejsstepanovs/go-litellm/pkg/response"
+	"github.com/andrejsstepanovs/go-litellm/common"
+	"github.com/andrejsstepanovs/go-litellm/response"
 )
 
 type Messages []Message

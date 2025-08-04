@@ -4,11 +4,10 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/conf/connections/litellm"
-
-	"github.com/spf13/viper"
+	"github.com/andrejsstepanovs/go-litellm/conf/connections/litellm"
 )
 
 func Test_Validate_Unit(t *testing.T) {

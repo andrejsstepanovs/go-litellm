@@ -3,8 +3,9 @@ package request_test
 import (
 	"testing"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/request"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/andrejsstepanovs/go-litellm/request"
 )
 
 func TestUserMessage(t *testing.T) {

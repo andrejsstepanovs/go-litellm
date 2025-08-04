@@ -1,8 +1,8 @@
 package request
 
 import (
-	"github.com/andrejsstepanovs/go-litellm/pkg/json_schema"
-	"github.com/andrejsstepanovs/go-litellm/pkg/models"
+	"github.com/andrejsstepanovs/go-litellm/json_schema"
+	"github.com/andrejsstepanovs/go-litellm/models"
 )
 
 // https://docs.litellm.ai/docs/completion/input

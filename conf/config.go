@@ -5,8 +5,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/conf/connections"
 	"github.com/spf13/viper"
+
+	"github.com/andrejsstepanovs/go-litellm/conf/connections"
 )
 
 type App struct {

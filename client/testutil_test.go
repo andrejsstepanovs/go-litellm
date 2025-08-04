@@ -4,9 +4,9 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/client"
-	"github.com/andrejsstepanovs/go-litellm/pkg/conf/connections/litellm"
-	"github.com/andrejsstepanovs/go-litellm/pkg/models"
+	"github.com/andrejsstepanovs/go-litellm/client"
+	"github.com/andrejsstepanovs/go-litellm/conf/connections/litellm"
+	"github.com/andrejsstepanovs/go-litellm/models"
 )
 
 const testModelGood = models.ModelID("claude-4")

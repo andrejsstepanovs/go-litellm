@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/common"
-	"github.com/andrejsstepanovs/go-litellm/pkg/response"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/andrejsstepanovs/go-litellm/common"
+	"github.com/andrejsstepanovs/go-litellm/response"
 )
 
 func Test_ToolCallFunction_Unmarshal_Unit(t *testing.T) {

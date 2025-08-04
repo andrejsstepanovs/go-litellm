@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/json_schema"
-	"github.com/andrejsstepanovs/go-litellm/pkg/models"
-	"github.com/andrejsstepanovs/go-litellm/pkg/request"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/andrejsstepanovs/go-litellm/json_schema"
+	"github.com/andrejsstepanovs/go-litellm/models"
+	"github.com/andrejsstepanovs/go-litellm/request"
 )
 
 func TestResponseFormat_Marshal(t *testing.T) {

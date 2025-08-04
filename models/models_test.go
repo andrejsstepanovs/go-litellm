@@ -3,8 +3,9 @@ package models_test
 import (
 	"testing"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/models"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/andrejsstepanovs/go-litellm/models"
 )
 
 func Test_Get_Unit(t *testing.T) {

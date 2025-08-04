@@ -6,20 +6,19 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"strconv"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/audio"
-	"github.com/andrejsstepanovs/go-litellm/pkg/common"
-	cfg "github.com/andrejsstepanovs/go-litellm/pkg/conf/connections/litellm"
-	"github.com/andrejsstepanovs/go-litellm/pkg/httpresp"
-	"github.com/andrejsstepanovs/go-litellm/pkg/mcp"
-	"github.com/andrejsstepanovs/go-litellm/pkg/models"
-	"github.com/andrejsstepanovs/go-litellm/pkg/request"
-	"github.com/andrejsstepanovs/go-litellm/pkg/response"
-	"github.com/andrejsstepanovs/go-litellm/pkg/users"
 	"github.com/go-playground/validator/v10"
 	fastshot "github.com/opus-domini/fast-shot"
 	"github.com/opus-domini/fast-shot/constant/mime"
+
+	"github.com/andrejsstepanovs/go-litellm/audio"
+	"github.com/andrejsstepanovs/go-litellm/common"
+	cfg "github.com/andrejsstepanovs/go-litellm/conf/connections/litellm"
+	"github.com/andrejsstepanovs/go-litellm/httpresp"
+	"github.com/andrejsstepanovs/go-litellm/mcp"
+	"github.com/andrejsstepanovs/go-litellm/models"
+	"github.com/andrejsstepanovs/go-litellm/request"
+	"github.com/andrejsstepanovs/go-litellm/response"
 )
 
 var validate = validator.New()
@@ -175,14 +174,13 @@ func (l *Litellm) Models(ctx context.Context) (models.Models, error) {
 	return res.Models, nil
 }
 
-func (l *Litellm) ToolCall(ctx context.Context, user users.User, tool common.ToolCallFunction) (response.ToolResponses, error) {
+func (l *Litellm) ToolCall(ctx context.Context, tool common.ToolCallFunction) (response.ToolResponses, error) {
 	target := l.Connection.Targets.Get(cfg.CLIENT_MCP)
 
 	resp, err := l.client(cfg.CLIENT_MCP).
 		POST("/mcp-rest/tools/call").
 		Context().Set(ctx).
 		Header().AddAccept(mime.JSON).
-		Header().Add("X-User-ID", strconv.FormatInt(user.ID, 10)).
 		Retry().SetExponentialBackoff(
 		target.RetryInterval,
 		target.RetryMaxAttempts,

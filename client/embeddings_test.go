@@ -7,10 +7,11 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/client"
-	"github.com/andrejsstepanovs/go-litellm/pkg/models"
-	"github.com/andrejsstepanovs/go-litellm/pkg/response"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/andrejsstepanovs/go-litellm/client"
+	"github.com/andrejsstepanovs/go-litellm/models"
+	"github.com/andrejsstepanovs/go-litellm/response"
 )
 
 func TestEmbeddings_Functional(t *testing.T) {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/conf/connections/litellm"
+	"github.com/andrejsstepanovs/go-litellm/conf/connections/litellm"
 )
 
 func Test_Target_Validate_Unit(t *testing.T) {

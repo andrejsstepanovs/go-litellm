@@ -7,11 +7,11 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/client"
-	"github.com/andrejsstepanovs/go-litellm/pkg/common"
-	"github.com/andrejsstepanovs/go-litellm/pkg/response"
-	"github.com/andrejsstepanovs/go-litellm/pkg/users"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/andrejsstepanovs/go-litellm/client"
+	"github.com/andrejsstepanovs/go-litellm/common"
+	"github.com/andrejsstepanovs/go-litellm/response"
 )
 
 func Test_ToolCall_Functional(t *testing.T) {
@@ -28,8 +28,8 @@ func Test_ToolCall_Functional(t *testing.T) {
 				"timezone": "Europe/Riga",
 			},
 		}
-		user := users.User{ID: 1}
-		res, err := clientInstance.ToolCall(context.Background(), user, tool)
+
+		res, err := clientInstance.ToolCall(context.Background(), tool)
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, res)
@@ -60,8 +60,7 @@ func Test_ToolCall(t *testing.T) {
 		conn.URL = *testUrl
 		clientInstance := client.Litellm{Config: c, Connection: conn}
 
-		user := users.User{ID: 1}
-		res, err := clientInstance.ToolCall(context.Background(), user, common.ToolCallFunction{Name: "current_time"})
+		res, err := clientInstance.ToolCall(context.Background(), common.ToolCallFunction{Name: "current_time"})
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, res)

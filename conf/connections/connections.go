@@ -3,7 +3,7 @@ package connections
 import (
 	"fmt"
 
-	"github.com/andrejsstepanovs/go-litellm/pkg/conf/connections/litellm"
+	"github.com/andrejsstepanovs/go-litellm/conf/connections/litellm"
 )
 
 type Config struct {
