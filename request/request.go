@@ -1,7 +1,6 @@
 package request
 
 import (
-	"github.com/andrejsstepanovs/go-litellm/json_schema"
 	"github.com/andrejsstepanovs/go-litellm/models"
 )
 
@@ -60,7 +59,7 @@ func (r *Request) SetAvailableTools(tools LLMCallTools) *Request {
 }
 
 // SetJSONSchema sets the response format to use JSON schema for structured output
-func (r *Request) SetJSONSchema(schema json_schema.JSONSchema) *Request {
+func (r *Request) SetJSONSchema(schema JSONSchema) *Request {
 	r.ResponseFormat = &ResponseFormat{
 		Type:       "json_schema",
 		JSONSchema: schema,

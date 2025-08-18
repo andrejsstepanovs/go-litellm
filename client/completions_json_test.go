@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/andrejsstepanovs/go-litellm/client"
-	"github.com/andrejsstepanovs/go-litellm/json_schema"
 	"github.com/andrejsstepanovs/go-litellm/request"
 )
 
@@ -32,7 +31,7 @@ func TestNewCompletionRequest_WithJSONSchema_Functional(t *testing.T) {
 			Cities []City `json:"cities"`
 		}
 
-		schema := json_schema.JSONSchema{
+		schema := request.JSONSchema{
 			Name: "list_of_cities",
 			Schema: map[string]interface{}{
 				"type": "object",

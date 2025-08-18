@@ -1,4 +1,4 @@
-package json_schema
+package request
 
 import (
 	"testing"

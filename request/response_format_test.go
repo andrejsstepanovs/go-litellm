@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/andrejsstepanovs/go-litellm/json_schema"
 	"github.com/andrejsstepanovs/go-litellm/models"
 	"github.com/andrejsstepanovs/go-litellm/request"
 )
@@ -21,7 +20,7 @@ func TestResponseFormat_Marshal(t *testing.T) {
 			name: "json_schema with strict mode",
 			responseFormat: &request.ResponseFormat{
 				Type: "json_schema",
-				JSONSchema: json_schema.JSONSchema{
+				JSONSchema: request.JSONSchema{
 					Schema: map[string]interface{}{
 						"type": "object",
 						"properties": map[string]interface{}{
@@ -40,7 +39,7 @@ func TestResponseFormat_Marshal(t *testing.T) {
 			name: "json_schema without strict mode",
 			responseFormat: &request.ResponseFormat{
 				Type: "json_schema",
-				JSONSchema: json_schema.JSONSchema{
+				JSONSchema: request.JSONSchema{
 					Schema: map[string]interface{}{
 						"type": "string",
 					},
@@ -84,7 +83,7 @@ func TestRequest_WithResponseFormat_Marshal(t *testing.T) {
 				Stream: false,
 				ResponseFormat: &request.ResponseFormat{
 					Type: "json_schema",
-					JSONSchema: json_schema.JSONSchema{
+					JSONSchema: request.JSONSchema{
 						Schema: map[string]interface{}{
 							"type": "object",
 							"properties": map[string]interface{}{
