@@ -10,6 +10,7 @@ test:
 
 .PHONY: install
 install:
+	go get -tool github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 	go mod tidy
 
 .PHONY: lint
