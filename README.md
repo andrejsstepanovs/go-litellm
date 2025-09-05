@@ -99,7 +99,7 @@ type ListOfCities struct {
     Cities []City `json:"cities"`
 }
 
-schema := json_schema.JSONSchema{
+schema := request.JSONSchema{
     Name: "list_of_cities",
     Schema: map[string]interface{}{
         "type": "object",
