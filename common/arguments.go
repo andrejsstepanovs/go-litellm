@@ -56,7 +56,7 @@ func isWhole(x float64) bool {
 	return math.Ceil(x) == x
 }
 
-func (t *Arguments) GetStrArgument(name string) (any, bool) {
+func (t *Arguments) GetStrArgument(name string) (string, bool) {
 	if !t.HasKey(name) {
 		return "", false
 	}
