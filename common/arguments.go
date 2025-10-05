@@ -22,9 +22,35 @@ func (a *Arguments) UnmarshalJSON(data []byte) error {
 		*a = make(Arguments)
 	}
 
-	// Copy values preserving their types
+	// Convert all values to strings
 	for key, value := range rawMap {
-		(*a)[key] = value
+		switch v := value.(type) {
+		case float64:
+			// Numbers become strings
+
+			// (JSON numbers are unmarshaled as float64)
+			// Check if it's actually an integer
+			if v == float64(int64(v)) {
+				(*a)[key] = strconv.FormatInt(int64(v), 10)
+			} else {
+				(*a)[key] = strconv.FormatFloat(v, 'f', -1, 64)
+			}
+		case string:
+			// String stays as string
+			(*a)[key] = v
+		case bool:
+			// Boolean stays as boolean
+			(*a)[key] = v
+		case nil:
+			(*a)[key] = ""
+		default:
+			// For any other type, convert to JSON string representation
+			jsonBytes, err := json.Marshal(v)
+			if err != nil {
+				return fmt.Errorf("error marshalling value for key %s: %w", key, err)
+			}
+			(*a)[key] = string(jsonBytes)
+		}
 	}
 
 	return nil

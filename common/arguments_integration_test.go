@@ -71,14 +71,14 @@ func Test_Arguments_AllTypes_Integration(t *testing.T) {
 	// Integer (unmarshaled as float64 in JSON)
 	val, ok = toolFunc.Arguments.GetArgument("int")
 	assert.True(t, ok)
-	assert.Equal(t, float64(42), val)
-	assert.IsType(t, float64(0), val)
+	assert.Equal(t, "42", val)
+	assert.IsType(t, "", val)
 
 	// Float
 	val, ok = toolFunc.Arguments.GetArgument("float")
 	assert.True(t, ok)
-	assert.Equal(t, 3.14, val)
-	assert.IsType(t, float64(0), val)
+	assert.Equal(t, "3.14", val)
+	assert.IsType(t, "0", val)
 
 	// Boolean
 	val, ok = toolFunc.Arguments.GetArgument("bool")
@@ -89,7 +89,7 @@ func Test_Arguments_AllTypes_Integration(t *testing.T) {
 	// Null
 	val, ok = toolFunc.Arguments.GetArgument("null")
 	assert.True(t, ok)
-	assert.Nil(t, val)
+	assert.Equal(t, "", val)
 
 	// Test GetStrArgument still works for all types
 	strVal, ok := toolFunc.Arguments.GetStrArgument("int")

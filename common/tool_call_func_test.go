@@ -36,7 +36,7 @@ func Test_ToolCallFunction_Unmarshal_MixedTypes(t *testing.T) {
 	// Test GetArgument (preserves original types)
 	timeoutVal, ok := f.Arguments.GetArgument("timeout")
 	assert.True(t, ok)
-	assert.Equal(t, float64(5000), timeoutVal)
+	assert.Equal(t, "5000", timeoutVal)
 
 	isTrueVal, ok := f.Arguments.GetArgument("isTrue")
 	assert.True(t, ok)
