@@ -9,7 +9,7 @@ import (
 	"github.com/andrejsstepanovs/go-litellm/models"
 )
 
-const testModelGood = models.ModelID("claude-4")
+const testModelGood = models.ModelID("google-gemini-2.5-flash")
 const testModel = models.ModelID("groq-llama-3.1-8b")
 const testEmbeddingModel = models.ModelID("mistral-embed")
 const testSTTOne = models.ModelID("whisper-1")

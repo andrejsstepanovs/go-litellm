@@ -84,6 +84,8 @@ func Test_Arguments_GetStrArgument_Unit(t *testing.T) {
 	args := common.Arguments{
 		"key1": "value1",
 		"key2": "value2",
+		"key3": float64(123),
+		"key4": true,
 	}
 
 	value, ok := args.GetStrArgument("key1")
@@ -91,6 +93,14 @@ func Test_Arguments_GetStrArgument_Unit(t *testing.T) {
 	assert.True(t, ok)
 
 	value, ok = args.GetStrArgument("key3")
+	assert.Equal(t, "123", value)
+	assert.True(t, ok)
+
+	value, ok = args.GetStrArgument("key4")
+	assert.Equal(t, "true", value)
+	assert.True(t, ok)
+
+	value, ok = args.GetStrArgument("key5")
 	assert.Equal(t, "", value)
 	assert.False(t, ok)
 }

@@ -20,6 +20,7 @@ func Test_ToolCallFunction_Unmarshal_MixedTypes(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "wait_for", f.Name)
 
+	// Test GetStrArgument (converts to string)
 	v, ok := f.Arguments.GetStrArgument("timeout")
 	assert.True(t, ok)
 	assert.Equal(t, "5000", v)
@@ -28,11 +29,40 @@ func Test_ToolCallFunction_Unmarshal_MixedTypes(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, "WordPress", v)
 
-	v, ok = f.Arguments.GetStrArgument("timeout")
-	assert.True(t, ok)
-	assert.Equal(t, "5000", v)
-
 	v, ok = f.Arguments.GetStrArgument("isTrue")
 	assert.True(t, ok)
 	assert.Equal(t, "true", v)
+
+	// Test GetArgument (preserves original types)
+	timeoutVal, ok := f.Arguments.GetArgument("timeout")
+	assert.True(t, ok)
+	assert.Equal(t, float64(5000), timeoutVal)
+
+	isTrueVal, ok := f.Arguments.GetArgument("isTrue")
+	assert.True(t, ok)
+	assert.Equal(t, true, isTrueVal)
+}
+
+func Test_ToolCallFunction_BooleanArgument(t *testing.T) {
+	js := `{
+		"name": "click",
+		"arguments": "{\"uid\": \"1_146\", \"dblClick\": true}"
+	}`
+
+	var f common.ToolCallFunction
+	err := json.Unmarshal([]byte(js), &f)
+	assert.NoError(t, err)
+	assert.Equal(t, "click", f.Name)
+
+	// Boolean should be preserved as boolean
+	dblClickVal, ok := f.Arguments.GetArgument("dblClick")
+	assert.True(t, ok)
+	assert.Equal(t, true, dblClickVal)
+	assert.IsType(t, true, dblClickVal)
+
+	// String should remain string
+	uidVal, ok := f.Arguments.GetArgument("uid")
+	assert.True(t, ok)
+	assert.Equal(t, "1_146", uidVal)
+	assert.IsType(t, "", uidVal)
 }

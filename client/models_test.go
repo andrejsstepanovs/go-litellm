@@ -135,7 +135,7 @@ func Test_Model_Functional(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotEmpty(t, info)
 		assert.Equal(t, string(info.ModelId), "claude-4")
-		assert.Equal(t, info.MaxInputTokens, 200000.0)
+		assert.Equal(t, 1e+06, info.MaxInputTokens)
 		assert.True(t, info.SupportsVision)
 	})
 }

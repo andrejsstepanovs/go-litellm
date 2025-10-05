@@ -24,7 +24,7 @@ func Test_ToolCall_Functional(t *testing.T) {
 
 		tool := common.ToolCallFunction{
 			Name: "current_time",
-			Arguments: map[string]string{
+			Arguments: common.Arguments{
 				"timezone": "Europe/Riga",
 			},
 		}
