@@ -1,0 +1,4 @@
+{
+  "name": "wait_for",
+  "arguments": "{\"text\": \"WordPress\", \"timeout\": 5000, \"isTrue\": true}"
+}

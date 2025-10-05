@@ -25,10 +25,13 @@ func (t *ToolCallFunction) UnmarshalJSON(data []byte) error {
 
 	if aux.Arguments != "" {
 		var args Arguments
-		if err := json.Unmarshal([]byte(aux.Arguments), &args); err != nil {
+		err := args.UnmarshalJSON([]byte(aux.Arguments))
+		if err != nil {
 			return fmt.Errorf("error unmarshalling arguments: %w", err)
 		}
 		t.Arguments = args
+	} else {
+		t.Arguments = make(Arguments)
 	}
 
 	return nil

@@ -17,7 +17,6 @@ func TestParseArgumentsString(t *testing.T) {
 	err = json.Unmarshal(dat, &toolCall)
 	assert.NoError(t, err)
 
-	// Verify that the string value works as expected
 	assert.Len(t, toolCall, 1)
 	args := toolCall[0].Function.Arguments
 	country, exists := args.GetStrArgument("country")
@@ -34,10 +33,9 @@ func TestParseArgumentsInt(t *testing.T) {
 	err = json.Unmarshal(dat, &toolCall)
 	assert.NoError(t, err)
 
-	// Verify that the integer value was converted to string
 	assert.Len(t, toolCall, 1)
 	args := toolCall[0].Function.Arguments
 	pageIdx, exists := args.GetStrArgument("pageIdx")
 	assert.True(t, exists)
-	assert.Equal(t, "4", pageIdx) // Should be string "4", not integer 4
+	assert.Equal(t, "4", pageIdx)
 }
