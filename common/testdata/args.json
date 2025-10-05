@@ -1,0 +1,11 @@
+[
+    {
+        "id": "tooluse_OBW4FZ2WRRK3uwtGPq1zoQ",
+        "type": "function",
+        "index": 0,
+        "function": {
+            "name": "weather",
+            "arguments": "{\"country\": \"Latvia\"}"
+        }
+    }
+]
