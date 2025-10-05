@@ -3,6 +3,7 @@ package common
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"strconv"
 )
 
@@ -10,6 +11,7 @@ type Arguments map[string]any
 
 // UnmarshalJSON implements custom unmarshaling for Arguments
 // Preserves original types (string, number, bool, etc.)
+// For numbers: if it's an integer value, store as string; if it's a float, keep as float64
 func (a *Arguments) UnmarshalJSON(data []byte) error {
 	// Unmarshal into a map[string]interface{} to preserve types
 	var rawMap map[string]interface{}
@@ -22,34 +24,20 @@ func (a *Arguments) UnmarshalJSON(data []byte) error {
 		*a = make(Arguments)
 	}
 
-	// Convert all values to strings
+	// Process values, preserving types but converting float64 integers to int
 	for key, value := range rawMap {
 		switch v := value.(type) {
+		case int:
+			(*a)[key] = v
 		case float64:
-			// Numbers become strings
-
-			// (JSON numbers are unmarshaled as float64)
-			// Check if it's actually an integer
-			if v == float64(int64(v)) {
-				(*a)[key] = strconv.FormatInt(int64(v), 10)
+			if isWhole(v) {
+				(*a)[key] = int(v)
 			} else {
-				(*a)[key] = strconv.FormatFloat(v, 'f', -1, 64)
+				(*a)[key] = v
 			}
-		case string:
-			// String stays as string
-			(*a)[key] = v
-		case bool:
-			// Boolean stays as boolean
-			(*a)[key] = v
-		case nil:
-			(*a)[key] = ""
 		default:
-			// For any other type, convert to JSON string representation
-			jsonBytes, err := json.Marshal(v)
-			if err != nil {
-				return fmt.Errorf("error marshalling value for key %s: %w", key, err)
-			}
-			(*a)[key] = string(jsonBytes)
+			// All other types (string, bool, nil, etc.) are stored as-is
+			(*a)[key] = value
 		}
 	}
 
@@ -64,7 +52,11 @@ func (t *Arguments) SetArgument(name string, value any) {
 	(*t)[name] = value
 }
 
-func (t *Arguments) GetStrArgument(name string) (string, bool) {
+func isWhole(x float64) bool {
+	return math.Ceil(x) == x
+}
+
+func (t *Arguments) GetStrArgument(name string) (any, bool) {
 	if !t.HasKey(name) {
 		return "", false
 	}

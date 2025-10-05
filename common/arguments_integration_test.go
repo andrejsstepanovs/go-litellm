@@ -11,10 +11,6 @@ import (
 
 // Test that demonstrates Arguments preserves types correctly for MCP tool calls
 func Test_Arguments_PreservesTypes_Integration(t *testing.T) {
-	// This simulates the exact scenario from the user's error:
-	// The AI returns: {"uid": "1_146", "dblClick": true}
-	// MCP expects: dblClick as boolean, not string
-
 	jsonStr := `{
 		"name": "click",
 		"arguments": "{\"uid\": \"1_146\", \"dblClick\": true}"
@@ -68,17 +64,15 @@ func Test_Arguments_AllTypes_Integration(t *testing.T) {
 	assert.Equal(t, "hello", val)
 	assert.IsType(t, "", val)
 
-	// Integer (unmarshaled as float64 in JSON)
+	// Integer (unmarshaled as int in JSON)
 	val, ok = toolFunc.Arguments.GetArgument("int")
 	assert.True(t, ok)
-	assert.Equal(t, "42", val)
-	assert.IsType(t, "", val)
+	assert.Equal(t, 42, val)
 
 	// Float
 	val, ok = toolFunc.Arguments.GetArgument("float")
 	assert.True(t, ok)
-	assert.Equal(t, "3.14", val)
-	assert.IsType(t, "0", val)
+	assert.Equal(t, float64(3.14), val)
 
 	// Boolean
 	val, ok = toolFunc.Arguments.GetArgument("bool")
@@ -89,7 +83,7 @@ func Test_Arguments_AllTypes_Integration(t *testing.T) {
 	// Null
 	val, ok = toolFunc.Arguments.GetArgument("null")
 	assert.True(t, ok)
-	assert.Equal(t, "", val)
+	assert.Nil(t, val)
 
 	// Test GetStrArgument still works for all types
 	strVal, ok := toolFunc.Arguments.GetStrArgument("int")

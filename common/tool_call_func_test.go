@@ -20,23 +20,21 @@ func Test_ToolCallFunction_Unmarshal_MixedTypes(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "wait_for", f.Name)
 
-	// Test GetStrArgument (converts to string)
-	v, ok := f.Arguments.GetStrArgument("timeout")
+	v, ok := f.Arguments.GetArgument("timeout")
 	assert.True(t, ok)
-	assert.Equal(t, "5000", v)
+	assert.Equal(t, int(5000), v)
 
-	v, ok = f.Arguments.GetStrArgument("text")
+	v, ok = f.Arguments.GetArgument("text")
 	assert.True(t, ok)
 	assert.Equal(t, "WordPress", v)
 
-	v, ok = f.Arguments.GetStrArgument("isTrue")
+	v, ok = f.Arguments.GetArgument("isTrue")
 	assert.True(t, ok)
-	assert.Equal(t, "true", v)
+	assert.Equal(t, true, v)
 
-	// Test GetArgument (preserves original types)
 	timeoutVal, ok := f.Arguments.GetArgument("timeout")
 	assert.True(t, ok)
-	assert.Equal(t, "5000", timeoutVal)
+	assert.Equal(t, int(5000), timeoutVal)
 
 	isTrueVal, ok := f.Arguments.GetArgument("isTrue")
 	assert.True(t, ok)
@@ -54,13 +52,11 @@ func Test_ToolCallFunction_BooleanArgument(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "click", f.Name)
 
-	// Boolean should be preserved as boolean
 	dblClickVal, ok := f.Arguments.GetArgument("dblClick")
 	assert.True(t, ok)
 	assert.Equal(t, true, dblClickVal)
 	assert.IsType(t, true, dblClickVal)
 
-	// String should remain string
 	uidVal, ok := f.Arguments.GetArgument("uid")
 	assert.True(t, ok)
 	assert.Equal(t, "1_146", uidVal)
