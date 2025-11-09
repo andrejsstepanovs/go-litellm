@@ -36,12 +36,12 @@ func Test_Choice_Unit(t *testing.T) {
 			response: &response.Response{
 				Choices: response.ResponseChoices{
 					{
-						FinishReason: response.FINISH_REASON_STOP,
+						FinishReason: response.FINISH_REASON_TOOL,
 						Index:        0,
 						Message:      response.ResponseMessage{Content: "First", Role: "assistant"},
 					},
 					{
-						FinishReason: response.FINISH_REASON_TOOL,
+						FinishReason: response.FINISH_REASON_STOP,
 						Index:        1,
 						Message:      response.ResponseMessage{Content: "Second", Role: "assistant"},
 					},
@@ -49,8 +49,8 @@ func Test_Choice_Unit(t *testing.T) {
 			},
 			expected: response.ResponseChoice{
 				FinishReason: response.FINISH_REASON_STOP,
-				Index:        0,
-				Message:      response.ResponseMessage{Content: "First", Role: "assistant"},
+				Index:        1,
+				Message:      response.ResponseMessage{Content: "Second", Role: "assistant"},
 			},
 		},
 		{
@@ -177,7 +177,7 @@ func Test_Message_Unit(t *testing.T) {
 					},
 				},
 			},
-			expected: response.ResponseMessage{Content: "First", Role: "assistant"},
+			expected: response.ResponseMessage{Content: "Second", Role: "assistant"},
 		},
 		{
 			name:     "Empty Choices",
@@ -213,6 +213,107 @@ func Test_Message_Unit(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.response.Message()
 			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func Test_SetText_Unit(t *testing.T) {
+	tests := []struct {
+		name          string
+		response      *response.Response
+		text          string
+		expectedState *response.Response
+	}{
+		{
+			name:     "Set text on empty Choices slice",
+			response: &response.Response{},
+			text:     "Hello world",
+			expectedState: &response.Response{
+				Choices: response.ResponseChoices{
+					{
+						FinishReason: response.FINISH_REASON_STOP,
+						Message: response.ResponseMessage{
+							Content: "Hello world",
+							Role:    "assistant",
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Set text on non-empty Choices slice",
+			response: &response.Response{
+				Choices: response.ResponseChoices{
+					{
+						FinishReason: response.FINISH_REASON_STOP,
+						Message: response.ResponseMessage{
+							Content: "Original text",
+							Role:    "assistant",
+						},
+					},
+				},
+			},
+			text: "Updated text",
+			expectedState: &response.Response{
+				Choices: response.ResponseChoices{
+					{
+						FinishReason: response.FINISH_REASON_STOP,
+						Message: response.ResponseMessage{
+							Content: "Updated text",
+							Role:    "assistant",
+						},
+					},
+				},
+			},
+		},
+		{
+			name:     "Set empty text",
+			response: &response.Response{},
+			text:     "",
+			expectedState: &response.Response{
+				Choices: response.ResponseChoices{
+					{
+						FinishReason: response.FINISH_REASON_STOP,
+						Message: response.ResponseMessage{
+							Content: "",
+							Role:    "assistant",
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Set text multiple times",
+			response: &response.Response{
+				Choices: response.ResponseChoices{
+					{
+						FinishReason: response.FINISH_REASON_STOP,
+						Message: response.ResponseMessage{
+							Content: "First text",
+							Role:    "assistant",
+						},
+					},
+				},
+			},
+			text: "Final text",
+			expectedState: &response.Response{
+				Choices: response.ResponseChoices{
+					{
+						FinishReason: response.FINISH_REASON_STOP,
+						Message: response.ResponseMessage{
+							Content: "Final text",
+							Role:    "assistant",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.response.SetText(tt.text)
+			assert.Equal(t, tt.expectedState, tt.response)
 		})
 	}
 }

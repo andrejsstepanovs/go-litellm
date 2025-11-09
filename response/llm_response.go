@@ -68,7 +68,8 @@ func (r *Response) Choice() ResponseChoice {
 	if r == nil || len(r.Choices) == 0 {
 		return ResponseChoice{}
 	}
-	return r.Choices[0]
+
+	return r.Choices[len(r.Choices)-1]
 }
 
 func (r *Response) Message() ResponseMessage {
@@ -84,9 +85,18 @@ func (r *Response) String() string {
 
 func (r *Response) SetText(text string) {
 	if len(r.Choices) == 0 {
-		r.Choices = make(ResponseChoices, 1)
+		r.Choices = ResponseChoices{
+			{
+				FinishReason: FINISH_REASON_STOP,
+				Message: ResponseMessage{
+					Content: text,
+					Role:    "assistant",
+				},
+			},
+		}
 	}
-	r.Choices[0].Message.Content = text
+
+	r.Choices[len(r.Choices)-1].Message.Content = text
 }
 
 func (r *Response) Bytes() []byte {
