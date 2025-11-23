@@ -6,8 +6,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	fastshot "github.com/opus-domini/fast-shot"
 	"github.com/opus-domini/fast-shot/constant/mime"
 
@@ -199,6 +204,26 @@ func (l *Litellm) ToolCall(ctx context.Context, tool common.ToolCallFunction) (r
 		return nil, fmt.Errorf("failed to parse tool-call response: %w", err)
 	}
 
+	// Handle edge case where API returns multiple responses
+	// Combine all responses into one separated by newlines to prevent duplicate tool call IDs
+	if len(res) > 1 {
+		var combinedText strings.Builder
+		for i, toolResp := range res {
+			if i > 0 {
+				combinedText.WriteString("\n")
+			}
+			combinedText.WriteString(toolResp.Text)
+		}
+
+		res = response.ToolResponses{
+			{
+				Type:        res[0].Type,
+				Text:        combinedText.String(),
+				Annotations: res[0].Annotations,
+			},
+		}
+	}
+
 	return res, nil
 }
 
@@ -299,6 +324,60 @@ func (l *Litellm) SpeechToText(ctx context.Context, model models.ModelMeta, audi
 	}
 
 	return audioResponse, nil
+}
+
+func (l *Litellm) TextToSpeech(ctx context.Context, speechRequest request.Speech) (response.Speech, error) {
+	url := fmt.Sprintf("%s/audio/speech", l.Connection.URL.String())
+	resp, err := audio.Speech(url, l.Config.APIKey, speechRequest)
+	if err != nil {
+		return response.Speech{}, fmt.Errorf("failed to send request: %w", err)
+	}
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("Warning: failed to close response body: %v", err)
+		}
+	}()
+
+	if resp.StatusCode != 200 {
+		msg, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return response.Speech{}, fmt.Errorf("failed to read error response (status %d): %w", resp.StatusCode, err)
+		}
+		return response.Speech{}, fmt.Errorf("speech API returned status %d: %s", resp.StatusCode, string(msg))
+	}
+
+	extension := speechRequest.ResponseFormat
+	if extension == "" {
+		extension = "mp3"
+	}
+	random := uuid.Must(uuid.NewRandom()).String()
+	fileName := fmt.Sprintf("speech_%s.%s", random, extension)
+	dir := os.TempDir()
+
+	fullFilePath := filepath.Join(dir, fileName)
+	audioFile, err := os.Create(fullFilePath)
+	if err != nil {
+		return response.Speech{}, fmt.Errorf("failed to create audio file %q: %w", fullFilePath, err)
+	}
+
+	_, err = io.Copy(audioFile, resp.Body)
+	if err != nil {
+		_ = os.Remove(fullFilePath)
+		return response.Speech{}, fmt.Errorf("failed to write audio data to file %q: %w", fullFilePath, err)
+	}
+
+	err = audioFile.Close()
+	if err != nil {
+		_ = os.Remove(fullFilePath)
+		return response.Speech{}, fmt.Errorf("failed to close audio file %q: %w", fileName, err)
+	}
+
+	return response.Speech{
+		Full:      audioFile.Name(),
+		Name:      fileName,
+		Directory: dir,
+		Extension: extension,
+	}, nil
 }
 
 // Embeddings retrieves text embeddings from the LiteLLM service.

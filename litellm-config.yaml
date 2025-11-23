@@ -32,10 +32,19 @@ model_list:
     model_info:
       mode: audio_transcription
 
-  - model_name: tts
+  - model_name: tts-gemini
+    litellm_params:
+      model: gemini/gemini-2.5-flash-preview-tts
+      api_key: os.environ/GOOGLE_API_KEY
+    model_info:
+      mode: audio_speech
+
+  - model_name: tts-openai
     litellm_params:
       model: openai/tts-1
       api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: audio_speech
 
   - model_name: "*"
     litellm_params:

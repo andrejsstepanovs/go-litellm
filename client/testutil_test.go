@@ -14,6 +14,8 @@ const testModel = models.ModelID("groq-llama-3.1-8b")
 const testEmbeddingModel = models.ModelID("mistral-embed")
 const testSTTOne = models.ModelID("whisper-1")
 const testSTTTwo = models.ModelID("deepgram-nova-2")
+const testTTSOne = models.ModelID("tts-openai")
+const testTTSTwo = models.ModelID("tts-gemini")
 
 func getConn() litellm.Connection {
 	return litellm.Connection{

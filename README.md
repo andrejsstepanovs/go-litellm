@@ -278,6 +278,7 @@ func mustParseURL(s string) *url.URL {
 * `/utils/token_counter` – count tokens for a given request
 * `/v1/embeddings` – generate embeddings
 * `/audio/transcriptions` – speech-to-text
+* `/audio/speech` – text-to-speech
 * `/mcp-rest/tools/list` – list MCP tools
 * `/mcp-rest/tools/call` – invoke MCP tools
 * `/chat/completions` – chat completions with support for text, images, strict schemas, and MCP integration

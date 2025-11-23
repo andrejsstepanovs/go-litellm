@@ -4,6 +4,7 @@ go 1.24.2
 
 require (
 	github.com/go-playground/validator/v10 v10.27.0
+	github.com/google/uuid v1.6.0
 	github.com/opus-domini/fast-shot v1.1.4
 	github.com/spf13/viper v1.12.0
 	github.com/stretchr/testify v1.11.1
