@@ -51,6 +51,7 @@ func TestSpeechToText(t *testing.T) {
 				context.Background(),
 				models.ModelMeta{ModelId: models.ModelID(audioModelName)},
 				file,
+				nil,
 			)
 			assert.NoError(t, err)
 			assert.Equal(t, "hello world", res.Text)
@@ -73,7 +74,7 @@ func TestSpeechToText(t *testing.T) {
 		clientInstance := client.Litellm{Config: c, Connection: conn}
 
 		file := "testdata/file_174.oga"
-		_, err = clientInstance.SpeechToText(context.Background(), models.ModelMeta{ModelId: "whisper-1"}, file)
+		_, err = clientInstance.SpeechToText(context.Background(), models.ModelMeta{ModelId: "whisper-1"}, file, nil)
 		assert.Error(t, err)
 	})
 }
@@ -113,6 +114,7 @@ func TestSpeechToText_Functional(t *testing.T) {
 				context.Background(),
 				models.ModelMeta{ModelId: models.ModelID(tc.modelName)},
 				file,
+				nil,
 			)
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedText, res.Text)

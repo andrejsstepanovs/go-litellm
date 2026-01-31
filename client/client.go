@@ -297,9 +297,9 @@ func (l *Litellm) Completion(ctx context.Context, req *request.Request) (respons
 	return res, nil
 }
 
-func (l *Litellm) SpeechToText(ctx context.Context, model models.ModelMeta, audioFile string) (audio.AudioResponse, error) {
+func (l *Litellm) SpeechToText(ctx context.Context, model models.ModelMeta, audioFile string, extraBody map[string]any) (audio.AudioResponse, error) {
 	url := fmt.Sprintf("%s/audio/transcriptions", l.Connection.URL.String())
-	resp, err := audio.TranscribeAudio(url, l.Config.APIKey, audioFile, string(model.ModelId))
+	resp, err := audio.TranscribeAudio(url, l.Config.APIKey, audioFile, string(model.ModelId), extraBody)
 	if err != nil {
 		return audio.AudioResponse{}, fmt.Errorf("failed to send request: %w", err)
 	}

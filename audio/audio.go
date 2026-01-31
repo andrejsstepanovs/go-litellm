@@ -9,11 +9,12 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/andrejsstepanovs/go-litellm/request"
 )
 
-func TranscribeAudio(url, token, filePath, model string) (*http.Response, error) {
+func TranscribeAudio(url, token, filePath, model string, extraBody map[string]any) (*http.Response, error) {
 	var body bytes.Buffer
 	writer := multipart.NewWriter(&body)
 
@@ -21,6 +22,31 @@ func TranscribeAudio(url, token, filePath, model string) (*http.Response, error)
 	err := writer.WriteField("model", model)
 	if err != nil {
 		return nil, fmt.Errorf("error writing model field: %w", err)
+	}
+
+	// Add extra body fields
+	for key, value := range extraBody {
+		var strValue string
+		switch v := value.(type) {
+		case string:
+			strValue = v
+		case bool:
+			strValue = strconv.FormatBool(v)
+		case float64:
+			strValue = strconv.FormatFloat(v, 'f', -1, 64)
+		case int:
+			strValue = strconv.Itoa(v)
+		default:
+			jsonBytes, err := json.Marshal(v)
+			if err != nil {
+				return nil, fmt.Errorf("error marshaling extra body field %s: %w", key, err)
+			}
+			strValue = string(jsonBytes)
+		}
+		err := writer.WriteField(key, strValue)
+		if err != nil {
+			return nil, fmt.Errorf("error writing extra body field %s: %w", key, err)
+		}
 	}
 
 	// Add file field
