@@ -6,6 +6,7 @@ import (
 )
 
 type ToolCallFunction struct {
+	ServerID  string    `json:"server_id,omitempty"` // your defined mcp name
 	Name      string    `json:"name"`
 	Arguments Arguments `json:"arguments"`
 }
