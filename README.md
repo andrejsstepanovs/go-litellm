@@ -72,7 +72,10 @@ fmt.Println(resp.String()) // The capital of France is Paris.
 
 ```go
 model, _ := ai.Model(ctx, "whisper-1")
-res, _ := ai.SpeechToText(ctx, model, "path/to/audio.oga")
+extraParams := map[string]any{}
+//extraParams["punctuate"] = true
+//extraParams["smart_format"] = true
+res, _ := ai.SpeechToText(ctx, model, "path/to/audio.oga", extraParams)
 fmt.Println(res.Text)
 ```
 
