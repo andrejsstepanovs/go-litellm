@@ -76,7 +76,6 @@ func (l *Litellm) Model(ctx context.Context, modelID models.ModelID) (models.Mod
 
 	resp, err := l.client(cfg.CLIENT_SYSTEM).
 		GET("model_group/info").
-		Query().AddParam("model_group", string(modelID)).
 		Context().Set(ctx).
 		Header().AddAccept(mime.JSON).
 		Retry().SetExponentialBackoff(
@@ -98,11 +97,13 @@ func (l *Litellm) Model(ctx context.Context, modelID models.ModelID) (models.Mod
 		return models.ModelMeta{}, fmt.Errorf("failed to parse model response: %w", err)
 	}
 
-	if len(res.ModelInfo) == 1 {
-		return res.ModelInfo[0], nil
+	for _, model := range res.ModelInfo {
+		if model.ModelId == modelID {
+			return model, nil
+		}
 	}
 
-	return models.ModelMeta{}, fmt.Errorf("multiple or no models found for %q", modelID)
+	return models.ModelMeta{}, fmt.Errorf("model not found for %q", modelID)
 }
 
 // ModelInfoMap model name => litellm model key (openrouter-qwen3-235b-a22b: openrouter/qwen/qwen3-235b-a22b)
