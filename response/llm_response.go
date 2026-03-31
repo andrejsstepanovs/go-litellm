@@ -21,13 +21,14 @@ type ResponseChoice struct {
 type ResponseChoices []ResponseChoice
 
 type ResponseMessage struct {
-	Content   string           `json:"content"`
-	Role      string           `json:"role"`
-	ToolCalls common.ToolCalls `json:"tool_calls,omitempty"`
+	Content          string           `json:"content"`
+	ReasoningContent string           `json:"reasoning_content"`
+	Role             string           `json:"role"`
+	ToolCalls        common.ToolCalls `json:"tool_calls,omitempty"`
 }
 
 func (rm *ResponseMessage) IsEmpty() bool {
-	return rm == nil || (rm.Content == "" && len(rm.ToolCalls) == 0)
+	return rm == nil || (rm.Content == "" && rm.ReasoningContent == "" && len(rm.ToolCalls) == 0)
 }
 
 type ResponseUsage struct {
@@ -82,6 +83,10 @@ func (r *Response) Message() ResponseMessage {
 
 func (r *Response) String() string {
 	return r.Message().Content
+}
+
+func (r *Response) ReasoningString() string {
+	return r.Message().ReasoningContent
 }
 
 func (r *Response) SetText(text string) {
