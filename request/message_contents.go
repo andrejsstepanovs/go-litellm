@@ -6,9 +6,10 @@ import (
 )
 
 type MessageContent struct {
-	Type     string    `json:"type"`                // e.g. "text", "image_url", etc.
-	Text     string    `json:"text,omitempty"`      // Text content
-	ImageUrl *ImageUrl `json:"image_url,omitempty"` // Image content, if applicable
+	Type         string        `json:"type"`                    // e.g. "text", "image_url", etc.
+	Text         string        `json:"text,omitempty"`          // Text content
+	ImageUrl     *ImageUrl     `json:"image_url,omitempty"`     // Image content, if applicable
+	CacheControl *CacheControl `json:"cache_control,omitempty"` // Prompt cache marker, if applicable
 }
 
 type MessageContents []MessageContent
@@ -23,4 +24,17 @@ func (mc MessageContents) String() string {
 		}
 	}
 	return strings.Join(resp, " ")
+}
+
+func (mc MessageContent) Cache(controlType CacheControlType, options ...CacheOption) MessageContent {
+	cacheControl := CacheControl{
+		Type: controlType,
+	}
+
+	for _, option := range options {
+		option(&cacheControl)
+	}
+
+	mc.CacheControl = &cacheControl
+	return mc
 }

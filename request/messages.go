@@ -19,6 +19,42 @@ type Message struct {
 	ToolCalls  common.ToolCalls `json:"tool_calls,omitempty"`
 }
 
+// CachePoint marks the message's last content block with default ephemeral cache control.
+// It returns the updated message for chaining and modifies the given message too.
+func (m Message) CachePoint() Message {
+	content := m.LastContent()
+	if content == nil {
+		log.Println("ALERT: Cache point requested for message with no contents, skipping")
+		return m
+	}
+
+	*content = content.Cache(CacheControlEphemeral)
+
+	return m
+}
+
+// LastContent returns the message's last content block, or nil when the message has no contents.
+func (m Message) LastContent() *MessageContent {
+	if len(m.Contents) == 0 {
+		return nil
+	}
+
+	return &m.Contents[len(m.Contents)-1]
+}
+
+func (m Messages) CacheControlCount() int {
+	count := 0
+	for _, msg := range m {
+		for _, content := range msg.Contents {
+			if content.CacheControl != nil {
+				count++
+			}
+		}
+	}
+
+	return count
+}
+
 func (m *Messages) RemoveEmpty() {
 	var filtered Messages
 	for _, msg := range *m {

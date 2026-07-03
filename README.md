@@ -148,7 +148,34 @@ count, _ := ai.TokenCounter(ctx, req)
 fmt.Println("Total tokens:", count.TotalTokens)
 ```
 
-### 6. List Available MCP Tools
+### 6. Cache Controls
+
+```go
+model, _ := ai.Model(ctx, "claude-4")
+
+messages := request.Messages{
+    request.SystemMessageSimple("Reusable context with a default cache point").CachePoint(),
+    request.SystemMessage(request.MessageContents{
+        request.MessageContent{
+            Type: "text",
+            Text: "You are an AI assistant tasked with analyzing legal documents.",
+        },
+        request.MessageContent{
+            Type: "text",
+            Text: longLegalAgreement,
+        }.Cache(request.CacheControlEphemeral, request.CacheTTL("1h")),
+    }),
+    request.UserMessageSimple("What are the key terms and conditions?"),
+}
+
+fmt.Println("Cache points:", messages.CacheControlCount())
+
+req := request.NewCompletionRequest(model, messages, nil, nil, 1)
+resp, _ := ai.Completion(ctx, req)
+fmt.Println(resp.String())
+```
+
+### 7. List Available MCP Tools
 
 ```go
 tools, _ := ai.Tools(ctx)
@@ -157,7 +184,7 @@ for _, tool := range tools {
 }
 ```
 
-### 7. Call an MCP Tool
+### 8. Call an MCP Tool
 
 ```go
 tool := common.ToolCallFunction{
@@ -168,7 +195,7 @@ res, _ := ai.ToolCall(ctx, tool)
 fmt.Println(res.String())
 ```
 
-### 8. Browse Available Models
+### 9. Browse Available Models
 
 ```go
 models, _ := ai.Models(ctx)
@@ -177,7 +204,7 @@ for _, m := range models {
 }
 ```
 
-### 9. Tool-Aware Conversation Example
+### 10. Tool-Aware Conversation Example
 
 This example demonstrates how to:
 
