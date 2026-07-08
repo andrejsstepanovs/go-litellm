@@ -300,6 +300,32 @@ func mustParseURL(s string) *url.URL {
 
 ---
 
+### 11. Custom Headers
+
+Configure headers once on the client and they're automatically attached to
+every outgoing request (chat completions, embeddings, token counting, model
+listing, audio transcription/speech, MCP calls, etc.) — mirroring litellm's
+Python `extra_headers` kwarg:
+
+```go
+cfg := client.Config{
+    APIKey:      "sk-1234",
+    Temperature: 0.7,
+    ExtraHeaders: map[string]string{
+        "X-App-Name": "YourAppName",
+        "X-User-Id":  "user_123",
+    },
+}
+
+ai, err := client.New(cfg, conn)
+```
+
+Keys and values are trimmed of surrounding whitespace before use. When
+creating the client via `client.New`, `Config.Validate()` rejects any header
+whose key or value is empty (or whitespace-only) after trimming.
+
+---
+
 ## Supported Endpoints
 
 * `/models` – list available models

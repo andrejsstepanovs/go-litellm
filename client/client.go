@@ -14,6 +14,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	fastshot "github.com/opus-domini/fast-shot"
+	"github.com/opus-domini/fast-shot/constant/header"
 	"github.com/opus-domini/fast-shot/constant/mime"
 
 	"github.com/andrejsstepanovs/go-litellm/audio"
@@ -31,6 +32,8 @@ var validate = validator.New()
 type Config struct {
 	APIKey      string  `validate:"required"`
 	Temperature float32 `validate:"required"`
+	// ExtraHeaders are optional custom HTTP headers (e.g. "X-App-Name", "X-User-Id")
+	ExtraHeaders map[string]string
 }
 
 func (c *Config) Validate() error {
@@ -41,6 +44,23 @@ func (c *Config) Validate() error {
 	err := validate.Struct(c)
 	if err != nil {
 		return fmt.Errorf("litellm validation error: %w", err)
+	}
+
+	if err := validateExtraHeaders(c.ExtraHeaders); err != nil {
+		return fmt.Errorf("litellm validation error: %w", err)
+	}
+
+	return nil
+}
+
+func validateExtraHeaders(headers map[string]string) error {
+	for key, value := range headers {
+		if strings.TrimSpace(key) == "" {
+			return fmt.Errorf("extra header key must not be empty (value: %q)", value)
+		}
+		if strings.TrimSpace(value) == "" {
+			return fmt.Errorf("extra header value must not be empty (key: %q)", key)
+		}
 	}
 	return nil
 }
@@ -62,13 +82,35 @@ func New(config Config, connection cfg.Connection) (*Litellm, error) {
 func (l *Litellm) client(name cfg.TargetName) fastshot.ClientHttpMethods {
 	timeout := l.Connection.Targets.Get(name).Timeout
 
-	return fastshot.NewClient(l.Connection.URL.String()).
+	builder := fastshot.NewClient(l.Connection.URL.String()).
 		Auth().BearerToken(l.Config.APIKey).
 		Config().SetTimeout(timeout).
 		Config().SetFollowRedirects(true).
 		Header().AddUserAgent(string(name)).
-		Header().AddContentType(mime.JSON).
-		Build()
+		Header().AddContentType(mime.JSON)
+
+	if len(l.Config.ExtraHeaders) > 0 {
+		builder = builder.Header().SetAll(toHeaderTypeMap(l.Config.ExtraHeaders))
+	}
+
+	return builder.Build()
+}
+
+// toHeaderTypeMap converts a plain string-keyed header map (as configured on
+// Config.ExtraHeaders) into the header.Type-keyed map fastshot expects.
+// Keys and values are trimmed of surrounding whitespace, and any entry left
+// with an empty key or value after trimming is skipped.
+func toHeaderTypeMap(headers map[string]string) map[header.Type]string {
+	converted := make(map[header.Type]string, len(headers))
+	for key, value := range headers {
+		key = strings.TrimSpace(key)
+		value = strings.TrimSpace(value)
+		if key == "" || value == "" {
+			continue
+		}
+		converted[header.Type(key)] = value
+	}
+	return converted
 }
 
 func (l *Litellm) Model(ctx context.Context, modelID models.ModelID) (models.ModelMeta, error) {
@@ -300,7 +342,7 @@ func (l *Litellm) Completion(ctx context.Context, req *request.Request) (respons
 
 func (l *Litellm) SpeechToText(ctx context.Context, model models.ModelMeta, audioFile string, extraBody map[string]any) (audio.AudioResponse, error) {
 	url := fmt.Sprintf("%s/audio/transcriptions", l.Connection.URL.String())
-	resp, err := audio.TranscribeAudio(url, l.Config.APIKey, audioFile, string(model.ModelId), extraBody)
+	resp, err := audio.TranscribeAudio(url, l.Config.APIKey, audioFile, string(model.ModelId), extraBody, l.Config.ExtraHeaders)
 	if err != nil {
 		return audio.AudioResponse{}, fmt.Errorf("failed to send request: %w", err)
 	}
@@ -329,7 +371,7 @@ func (l *Litellm) SpeechToText(ctx context.Context, model models.ModelMeta, audi
 
 func (l *Litellm) TextToSpeech(ctx context.Context, speechRequest request.Speech) (response.Speech, error) {
 	url := fmt.Sprintf("%s/audio/speech", l.Connection.URL.String())
-	resp, err := audio.Speech(url, l.Config.APIKey, speechRequest)
+	resp, err := audio.Speech(url, l.Config.APIKey, speechRequest, l.Config.ExtraHeaders)
 	if err != nil {
 		return response.Speech{}, fmt.Errorf("failed to send request: %w", err)
 	}
