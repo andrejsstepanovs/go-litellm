@@ -14,6 +14,13 @@ type Request struct {
 	ToolChoice     string          `json:"tool_choice,omitempty"`
 	ResponseFormat *ResponseFormat `json:"response_format,omitempty"`
 	Functions      string          `json:"functions,omitempty"`
+	// ReasoningEffort enables model "thinking"/reasoning (e.g. "low",
+	// "medium", "high"). For Gemini models this must be set to receive
+	// thought_signature values on function calls; without it, multi-turn
+	// function calling can fail with "missing thought_signature" errors once
+	// a prior assistant tool call is replayed back to the model. See
+	// https://docs.litellm.ai/docs/providers/gemini#thought-signatures
+	ReasoningEffort string `json:"reasoning_effort,omitempty"`
 }
 
 // TokenCounterRequest represents the request body for the LiteLLM /utils/token_counter endpoint.
@@ -55,6 +62,16 @@ func (r *Request) SetTemperature(temp float32, supportedParams []string) *Reques
 func (r *Request) SetAvailableTools(tools LLMCallTools) *Request {
 	r.Tools = &tools
 
+	return r
+}
+
+// SetReasoningEffort enables model thinking/reasoning effort for Gemini's models.
+// See https://docs.litellm.ai/docs/providers/gemini#thought-signatures
+func (r *Request) SetReasoningEffort(effort string, model models.ModelMeta) *Request {
+	if effort == "" || !model.SupportsReasoning {
+		return r
+	}
+	r.ReasoningEffort = effort
 	return r
 }
 
