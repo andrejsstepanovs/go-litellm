@@ -186,6 +186,30 @@ func TestAIMessage(t *testing.T) {
 	assert.Equal(t, "-", request.AIMessage(response.ResponseMessage{Role: "assistant"}).Contents[0].Text)
 }
 
+// TestAIMessage_PreservesThoughtSignature ensures that when a response's
+// tool call carries a Gemini thought_signature in provider_specific_fields,
+// AIMessage() round-trips it into the assistant request message unchanged
+// so it can be echoed back to Gemini on the next turn. Without this,
+// multi-turn function calling with Gemini fails with a 400 "missing
+// thought_signature" error.
+func TestAIMessage_PreservesThoughtSignature(t *testing.T) {
+	toolCalls := common.ToolCalls{
+		{
+			ID:                     "call-1",
+			Index:                  0,
+			Function:               common.ToolCallFunction{Name: "lookup"},
+			ProviderSpecificFields: map[string]any{"thought_signature": "Cs0CAXLI2nyD"},
+		},
+	}
+
+	message := request.AIMessage(response.ResponseMessage{
+		Role:      "assistant",
+		ToolCalls: toolCalls,
+	})
+
+	assert.Equal(t, "Cs0CAXLI2nyD", message.ToolCalls[0].ThoughtSignature())
+}
+
 func TestMessagesHelpers(t *testing.T) {
 	user := request.UserMessageSimple("hello")
 	assistant := request.AssistantMessageSimple("hi")

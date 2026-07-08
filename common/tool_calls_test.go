@@ -57,3 +57,50 @@ func TestParseArguments(t *testing.T) {
 		assert.Equal(t, true, val)
 	})
 }
+
+func TestToolCall_ThoughtSignature(t *testing.T) {
+	t.Run("unmarshals and exposes thought_signature from provider_specific_fields", func(t *testing.T) {
+		jsonStr := `{
+			"id": "call_abc123",
+			"type": "function",
+			"index": 0,
+			"function": {"name": "get_weather", "arguments": "{\"location\": \"Tokyo\"}"},
+			"provider_specific_fields": {"thought_signature": "Cs0CAXLI2nyD"}
+		}`
+
+		var tc ToolCall
+		err := json.Unmarshal([]byte(jsonStr), &tc)
+		assert.NoError(t, err)
+		assert.Equal(t, "Cs0CAXLI2nyD", tc.ThoughtSignature())
+	})
+
+	t.Run("round-trips thought_signature back into the marshaled JSON", func(t *testing.T) {
+		tc := ToolCall{
+			ID:   "call_abc123",
+			Type: "function",
+			Function: ToolCallFunction{
+				Name:      "get_weather",
+				Arguments: Arguments{"location": "Tokyo"},
+			},
+			ProviderSpecificFields: map[string]any{"thought_signature": "Cs0CAXLI2nyD"},
+		}
+
+		out, err := json.Marshal(&tc)
+		assert.NoError(t, err)
+
+		var roundTripped ToolCall
+		err = json.Unmarshal(out, &roundTripped)
+		assert.NoError(t, err)
+		assert.Equal(t, "Cs0CAXLI2nyD", roundTripped.ThoughtSignature())
+	})
+
+	t.Run("returns empty string when absent", func(t *testing.T) {
+		tc := ToolCall{ID: "call_abc123"}
+		assert.Equal(t, "", tc.ThoughtSignature())
+	})
+
+	t.Run("returns empty string when value is not a string", func(t *testing.T) {
+		tc := ToolCall{ProviderSpecificFields: map[string]any{"thought_signature": 42}}
+		assert.Equal(t, "", tc.ThoughtSignature())
+	})
+}
