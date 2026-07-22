@@ -1,6 +1,6 @@
 # go-litellm
 
-A **Go client library** for interacting with the [LiteLLM](https://github.com/BerriAI/litellm) API. This package provides a simple, type-safe, and developer-friendly way to perform completions, audio transcription, image-based queries, structured JSON output, embeddings, token counting, MCP tool operations, model browsing, and more.
+A **Go client library** for interacting with the [LiteLLM](https://github.com/BerriAI/litellm) API. This package provides a simple, type-safe, and developer-friendly way to perform completions, audio transcription, image-based queries, structured JSON output, embeddings, token counting, tool operations, model browsing, and more.
 
 ---
 
@@ -209,7 +209,7 @@ fmt.Printf("Cache Read Tokens: %d\n", resp.Usage.CacheReadTokens())
 fmt.Printf("Cache Creation Tokens: %d\n", resp.Usage.CacheCreationTokens())
 ```
 
-### 7. List Available MCP Tools
+### 7. List Available Tools
 
 ```go
 tools, _ := ai.Tools(ctx)
@@ -218,7 +218,7 @@ for _, tool := range tools {
 }
 ```
 
-### 8. Call an MCP Tool
+### 8. Call a Tool
 
 ```go
 tool := common.ToolCallFunction{
@@ -243,7 +243,7 @@ for _, m := range models {
 This example demonstrates how to:
 
 1. Maintain a conversation history.
-2. Send the list of available MCP tools so the AI knows what it can call.
+2. Send the list of available tools so the AI knows what it can call.
 3. When AI requests a tool call, execute it, append the result to the history, and send it back.
 4. Repeat until AI no longer requests tools.
 
@@ -338,7 +338,7 @@ func mustParseURL(s string) *url.URL {
 
 Configure headers once on the client and they're automatically attached to
 every outgoing request (chat completions, embeddings, token counting, model
-listing, audio transcription/speech, MCP calls, etc.) — mirroring litellm's
+listing, audio transcription/speech, tool calls, etc.) — mirroring litellm's
 Python `extra_headers` kwarg:
 
 ```go
@@ -369,9 +369,9 @@ whose key or value is empty (or whitespace-only) after trimming.
 * `/v1/embeddings` – generate embeddings
 * `/audio/transcriptions` – speech-to-text
 * `/audio/speech` – text-to-speech
-* `/mcp-rest/tools/list` – list MCP tools
-* `/mcp-rest/tools/call` – invoke MCP tools
-* `/chat/completions` – chat completions with support for text, images, strict schemas, and MCP integration
+* `/mcp-rest/tools/list` – list tools
+* `/mcp-rest/tools/call` – invoke tools
+* `/chat/completions` – chat completions with support for text, images, strict schemas, and tool calling integration
 
 ---
 
