@@ -70,7 +70,7 @@ func (m *Messages) RemoveEmpty() {
 			}
 			contents = append(contents, c)
 		}
-		if len(contents) == 0 {
+		if len(contents) == 0 && len(msg.ToolCalls) == 0 {
 			log.Println("ALERT: Message with no valid contents found, skipping")
 			continue
 		}
