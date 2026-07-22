@@ -21,6 +21,9 @@ type Request struct {
 	// a prior assistant tool call is replayed back to the model. See
 	// https://docs.litellm.ai/docs/providers/gemini#thought-signatures
 	ReasoningEffort string `json:"reasoning_effort,omitempty"`
+	// CacheControlInjectionPoints configures LiteLLM proxy to automatically insert
+	// ephemeral markers at specific points (e.g. "system", "user").
+	CacheControlInjectionPoints []string `json:"cache_control_injection_points,omitempty"`
 }
 
 // TokenCounterRequest represents the request body for the LiteLLM /utils/token_counter endpoint.
@@ -105,5 +108,12 @@ func NewCompletionRequest(model models.ModelMeta, messages Messages, availableTo
 		r.SetTemperature(defaultTemperature, model.SupportedOpenAIParams)
 	}
 
+	return r
+}
+
+// SetCacheControlInjectionPoints sets the LiteLLM cache_control_injection_points property
+// to automatically instruct LiteLLM to inject ephemeral caching markers into messages.
+func (r *Request) SetCacheControlInjectionPoints(points []string) *Request {
+	r.CacheControlInjectionPoints = points
 	return r
 }

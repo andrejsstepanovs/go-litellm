@@ -150,6 +150,12 @@ fmt.Println("Total tokens:", count.TotalTokens)
 
 ### 6. Cache Controls
 
+`go-litellm` provides both manual and automatic ways to instruct upstream providers (like Anthropic and Gemini) to cache prompt blocks.
+
+#### Manual Caching
+
+Use `CachePoint()` on a simple message, or `.Cache()` on specific blocks for granular control:
+
 ```go
 model, _ := ai.Model(ctx, "claude-4")
 
@@ -173,6 +179,34 @@ fmt.Println("Cache points:", messages.CacheControlCount())
 req := request.NewCompletionRequest(model, messages, nil, nil, 1)
 resp, _ := ai.Completion(ctx, req)
 fmt.Println(resp.String())
+```
+
+#### Automatic Caching
+
+If you are using LiteLLM proxy, you can use the `SetCacheControlInjectionPoints` feature to tell LiteLLM to automatically append ephemeral cache markers to specific message roles without modifying messages manually:
+
+```go
+model, _ := ai.Model(ctx, "claude-4")
+
+messages := request.Messages{
+    request.SystemMessageSimple("Reusable context"),
+    request.UserMessageSimple("What are the key terms?"),
+}
+
+req := request.NewCompletionRequest(model, messages, nil, nil, 1)
+// Automatically inserts {"type": "ephemeral"} on system and user messages
+req.SetCacheControlInjectionPoints([]string{"system", "user"})
+
+resp, _ := ai.Completion(ctx, req)
+```
+
+#### Cache Metrics
+
+When utilizing caching, you can retrieve the tokens used for cache hits and creations directly from the response usage metrics:
+
+```go
+fmt.Printf("Cache Read Tokens: %d\n", resp.Usage.CacheReadTokens())
+fmt.Printf("Cache Creation Tokens: %d\n", resp.Usage.CacheCreationTokens())
 ```
 
 ### 7. List Available MCP Tools

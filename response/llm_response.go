@@ -51,9 +51,18 @@ type CompletionTokensDetails struct {
 }
 
 type PromptTokensDetails struct {
-	AudioTokens  int `json:"audio_tokens"`
-	CachedTokens int `json:"cached_tokens"`
-	ImageTokens  int `json:"image_tokens"`
+	AudioTokens         int `json:"audio_tokens,omitempty"`
+	CachedTokens        int `json:"cached_tokens,omitempty"`
+	ImageTokens         int `json:"image_tokens,omitempty"`
+	CacheCreationTokens int `json:"cache_creation_tokens,omitempty"`
+}
+
+func (u *ResponseUsage) CacheReadTokens() int {
+	return u.PromptTokensDetails.CachedTokens
+}
+
+func (u *ResponseUsage) CacheCreationTokens() int {
+	return u.PromptTokensDetails.CacheCreationTokens
 }
 
 type Response struct {
