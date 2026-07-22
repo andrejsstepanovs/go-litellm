@@ -23,7 +23,7 @@ type Request struct {
 	ReasoningEffort string `json:"reasoning_effort,omitempty"`
 	// CacheControlInjectionPoints configures LiteLLM proxy to automatically insert
 	// ephemeral markers at specific points (e.g. "system", "user").
-	CacheControlInjectionPoints []string `json:"cache_control_injection_points,omitempty"`
+	CacheControlInjectionPoints any `json:"cache_control_injection_points,omitempty"`
 }
 
 // TokenCounterRequest represents the request body for the LiteLLM /utils/token_counter endpoint.
@@ -114,6 +114,10 @@ func NewCompletionRequest(model models.ModelMeta, messages Messages, availableTo
 // SetCacheControlInjectionPoints sets the LiteLLM cache_control_injection_points property
 // to automatically instruct LiteLLM to inject ephemeral caching markers into messages.
 func (r *Request) SetCacheControlInjectionPoints(points []string) *Request {
-	r.CacheControlInjectionPoints = points
+	var dicts []map[string]string
+	for _, p := range points {
+		dicts = append(dicts, map[string]string{"location": "message", "role": p})
+	}
+	r.CacheControlInjectionPoints = dicts
 	return r
 }
