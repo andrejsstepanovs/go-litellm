@@ -1,6 +1,8 @@
 package response
 
 import (
+	"encoding/json"
+
 	"github.com/andrejsstepanovs/go-litellm/common"
 	"github.com/andrejsstepanovs/go-litellm/models"
 )
@@ -23,12 +25,36 @@ type ResponseChoices []ResponseChoice
 type ResponseMessage struct {
 	Content          string           `json:"content"`
 	ReasoningContent string           `json:"reasoning_content"`
+	Reasoning        json.RawMessage  `json:"reasoning,omitempty"`
 	Role             string           `json:"role"`
 	ToolCalls        common.ToolCalls `json:"tool_calls,omitempty"`
 }
 
 func (rm *ResponseMessage) IsEmpty() bool {
-	return rm == nil || (rm.Content == "" && rm.ReasoningContent == "" && len(rm.ToolCalls) == 0)
+	if rm == nil {
+		return true
+	}
+	if rm.Content != "" || rm.ReasoningContent != "" || len(rm.ToolCalls) > 0 {
+		return false
+	}
+	return rm.ReasoningString() == ""
+}
+
+// ReasoningString returns the reasoning field as a plain string.
+// Use it if reasoning is not part of Content or ReasoningContent.
+// Returns an empty string when no reasoning was supplied.
+func (rm *ResponseMessage) ReasoningString() string {
+	if rm == nil || len(rm.Reasoning) == 0 {
+		return ""
+	}
+	var s string
+	if err := json.Unmarshal(rm.Reasoning, &s); err == nil {
+		return s
+	}
+	if json.Valid(rm.Reasoning) {
+		return string(rm.Reasoning)
+	}
+	return string(rm.Reasoning)
 }
 
 type ResponseUsage struct {

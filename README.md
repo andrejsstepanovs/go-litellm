@@ -360,6 +360,64 @@ whose key or value is empty (or whitespace-only) after trimming.
 
 ---
 
+### 12. Reasoning Responses
+
+Some reasoning models emit the model's final answer in a reasoning field
+rather than the standard `content` slot. Two flavours are encountered in practice:
+
+| Field               | Used by     | Shape |
+| ------------------- | ----------- | ----- |
+| `reasoning_content` | DeepSeek-style models served via LiteLLM | string |
+| `reasoning`         | OpenRouter-style models (e.g. `openai/gpt-oss-20b`) | string, object, or array |
+
+`response.ResponseMessage` exposes both:
+
+```go
+type ResponseMessage struct {
+    Content          string           `json:"content"`
+    ReasoningContent string           `json:"reasoning_content"`
+    Reasoning        json.RawMessage  `json:"reasoning,omitempty"`
+    Role             string           `json:"role"`
+    ToolCalls        common.ToolCalls `json:"tool_calls,omitempty"`
+}
+```
+
+`Reasoning` is kept as a `json.RawMessage` because OpenRouter may serialise
+it as either a plain string or a structured object/array of reasoning
+details. Use the `ReasoningString()` helper to read it as a string regardless of the shape:
+
+```go
+msg := resp.Message()
+
+switch {
+case msg.Content != "":
+    fmt.Println("content:", msg.Content)
+case msg.ReasoningContent != "":
+    fmt.Println("reasoning_content:", msg.ReasoningContent)
+case msg.ReasoningString() != "":
+    // gpt-oss-20b on OpenRouter falls here.
+    fmt.Println("reasoning:", msg.ReasoningString())
+}
+```
+
+`ReasoningString()`:
+
+* Returns the raw string when `reasoning` is a JSON string.
+* Re-emits the JSON when `reasoning` is an object or array of structured
+  reasoning details (e.g. OpenRouter's `reasoning_details`), so callers can
+  still inspect or extract fields like `text`.
+* Returns `""` for an empty payload, a nil receiver, or any other
+  "empty" value.
+
+`ResponseMessage.IsEmpty()` is also aware of the new field: a message that
+carries only `reasoning` is no longer considered empty.
+
+The existing `Response.ReasoningString()` helper continues to return only
+`ReasoningContent` to preserve backwards compatibility — use
+`Response.Message().ReasoningString()` for the OpenRouter-style field.
+
+---
+
 ## Supported Endpoints
 
 * `/models` – list available models
