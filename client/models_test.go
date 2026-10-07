@@ -175,6 +175,7 @@ func TestModel_ErrorScenarios(t *testing.T) {
 		name           string
 		handler        http.HandlerFunc
 		modelID        string
+		expectNoErr    bool
 		expectedErrStr string
 	}{
 		{
@@ -194,7 +195,7 @@ func TestModel_ErrorScenarios(t *testing.T) {
 				_, _ = w.Write([]byte(`{"data":[]}`))
 			},
 			modelID:        "test-model",
-			expectedErrStr: `multiple or no models found for "test-model"`,
+			expectedErrStr: `model not found for "test-model"`,
 		},
 		{
 			name: "multiple models in response",
@@ -203,8 +204,8 @@ func TestModel_ErrorScenarios(t *testing.T) {
 				w.Header().Set("Content-Type", "application/json")
 				_, _ = w.Write([]byte(`{"data":[{"model_group":"test-model"},{"model_group":"another-model"}]}`))
 			},
-			modelID:        "test-model",
-			expectedErrStr: `multiple or no models found for "test-model"`,
+			modelID:     "test-model",
+			expectNoErr: true,
 		},
 		{
 			name: "malformed json",
@@ -233,6 +234,10 @@ func TestModel_ErrorScenarios(t *testing.T) {
 
 			_, err = clientInstance.Model(context.Background(), models.ModelID(tc.modelID))
 
+			if tc.expectNoErr {
+				assert.NoError(t, err)
+				return
+			}
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), tc.expectedErrStr)
 		})

@@ -418,6 +418,54 @@ The existing `Response.ReasoningString()` helper continues to return only
 
 ---
 
+### 13. Embeddings
+
+Text, batched text and multimodal (image / audio) inputs are supported. Media
+references (file paths or URLs) are resolved by the LiteLLM server, not the client.
+
+```go
+clientInstance := client.Litellm{Config: cfg, Connection: conn}
+
+// Single text
+resp, err := clientInstance.Embeddings(ctx, models.ModelMeta{ModelId: "gemma-embed"},
+    request.NewTextInput("what is the weather today"))
+
+// Batch of texts
+resp, err = clientInstance.Embeddings(ctx, modelMeta,
+    request.NewTextsInput([]string{"a", "b", "c"}))
+
+// Text + image, or image-only / audio-only
+resp, err = clientInstance.Embeddings(ctx, modelMeta,
+    request.NewMediaInput(request.EmbeddingMedia{
+        Text:  "a red square",
+        Image: []string{"/tmp/red.png"},
+    }))
+resp, err = clientInstance.Embeddings(ctx, modelMeta,
+    request.NewMediaInput(request.EmbeddingMedia{Audio: []string{"/tmp/tone.wav"}}))
+
+// Full control: MRL dimensions and prompt template (text inputs only)
+resp, err = clientInstance.EmbeddingsRequest(ctx, request.EmbeddingRequest{
+    Model:      "gemma-embed",
+    Input:      request.NewTextInput("hot sunny day"),
+    Dimensions: 256, // 128 / 256 / 512 / 768; 0 = server default (768)
+    PromptName: "Retrieval-query",
+})
+
+for _, d := range resp.Data {
+    vec := d.Embedding.Float32() // []float32, L2-normalized
+    _ = vec
+}
+```
+
+Notes:
+
+* `prompt_name` (e.g. `Retrieval-query`, `Retrieval-document`) is only valid
+  with plain string inputs; the request is rejected client-side otherwise.
+* Embedding usage includes token details; media-only inputs report zero
+  prompt tokens.
+
+---
+
 ## Supported Endpoints
 
 * `/models` – list available models

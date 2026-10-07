@@ -423,15 +423,20 @@ func (l *Litellm) TextToSpeech(ctx context.Context, speechRequest request.Speech
 	}, nil
 }
 
-// Embeddings retrieves text embeddings from the LiteLLM service.
-func (l *Litellm) Embeddings(ctx context.Context, model models.ModelMeta, inputText string) (response.EmbeddingResponse, error) {
-	if inputText == "" {
-		return response.EmbeddingResponse{}, fmt.Errorf("inputText cannot be empty")
-	}
-
-	req := request.EmbeddingRequest{
+// Embeddings retrieves embeddings from the LiteLLM service.
+// The input supports plain strings, string batches and multimodal (text/image/audio) elements.
+func (l *Litellm) Embeddings(ctx context.Context, model models.ModelMeta, input request.EmbeddingInput) (response.EmbeddingResponse, error) {
+	return l.EmbeddingsRequest(ctx, request.EmbeddingRequest{
 		Model: string(model.ModelId),
-		Input: inputText,
+		Input: input,
+	})
+}
+
+// EmbeddingsRequest retrieves embeddings from the LiteLLM service with full control over the request,
+// including multimodal inputs, dimensions truncation and prompt name selection.
+func (l *Litellm) EmbeddingsRequest(ctx context.Context, req request.EmbeddingRequest) (response.EmbeddingResponse, error) {
+	if err := req.Validate(); err != nil {
+		return response.EmbeddingResponse{}, err
 	}
 
 	target := l.Connection.Targets.Get(cfg.CLIENT_LLM)

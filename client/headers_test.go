@@ -61,7 +61,7 @@ func TestExtraHeaders_AppliedToAllRequestTypes(t *testing.T) {
 		defer server.Close()
 
 		clientInstance := newTestClientWithHeaders(t, server.URL, extraHeaders)
-		_, err := clientInstance.Embeddings(context.Background(), models.ModelMeta{ModelId: "test"}, "test input")
+		_, err := clientInstance.Embeddings(context.Background(), models.ModelMeta{ModelId: "test"}, request.NewTextInput("test input"))
 		assert.NoError(t, err)
 		assertExtraHeaders(t, captured)
 	})
