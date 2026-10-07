@@ -18,6 +18,13 @@ func TestTextToSpeech_Functional(t *testing.T) {
 		return
 	}
 
+	clientInstance := client.Litellm{Config: getConfig(), Connection: getConn()}
+
+	available := map[string]bool{}
+	for _, m := range mustAvailableModels(t, clientInstance) {
+		available[string(m.ID)] = true
+	}
+
 	testCases := []struct {
 		name              string
 		modelName         string
@@ -45,7 +52,9 @@ func TestTextToSpeech_Functional(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			clientInstance := client.Litellm{Config: getConfig(), Connection: getConn()}
+			if !available[tc.modelName] {
+				t.Skipf("model %q is not accessible with the configured API key", tc.modelName)
+			}
 
 			req := request.Speech{
 				Input:          tc.input,

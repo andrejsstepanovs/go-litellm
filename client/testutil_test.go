@@ -1,8 +1,10 @@
 package client_test
 
 import (
+	"context"
 	"net/url"
 	"os"
+	"testing"
 	"time"
 
 	"github.com/andrejsstepanovs/go-litellm/client"
@@ -10,8 +12,8 @@ import (
 	"github.com/andrejsstepanovs/go-litellm/models"
 )
 
-const testModelGood = models.ModelID("google-gemini-2.5-flash")
-const testModel = models.ModelID("groq-llama-3.1-8b")
+const testModelGood = models.ModelID("active")
+const testModel = models.ModelID("active")
 const testEmbeddingModel = models.ModelID("gemma-embed")
 const testEmbeddingMediaModel = models.ModelID("gemma-embed")
 
@@ -23,8 +25,8 @@ const embeddingTestAudio = "/tmp/tone.wav"
 // NASA imagery is public domain.
 const embeddingTestImageURL = "https://images-assets.nasa.gov/image/PIA12235/PIA12235~small.jpg"
 const embeddingTestAudioURL = "https://github.com/pdx-cs-sound/wavs/raw/refs/heads/main/voice-note.wav"
-const testSTTOne = models.ModelID("whisper-1")
-const testSTTTwo = models.ModelID("deepgram-nova-2")
+const testSTTOne = models.ModelID("parakeet-tdt")
+const testSTTTwo = models.ModelID("parakeet-tdt")
 const testTTSOne = models.ModelID("tts-openai")
 const testTTSTwo = models.ModelID("tts-gemini")
 
@@ -62,6 +64,16 @@ func getConfig() client.Config {
 		APIKey:      getTestKey(),
 		Temperature: 0,
 	}
+}
+
+// mustAvailableModels returns the model groups accessible with the configured API key.
+func mustAvailableModels(t *testing.T, c client.Litellm) models.Models {
+	t.Helper()
+	ms, err := c.Models(context.Background())
+	if err != nil {
+		t.Fatalf("failed to list models: %v", err)
+	}
+	return ms
 }
 
 // getTestURL returns the LiteLLM address from LITELLM_TEST_URL, defaulting to localhost:4000.

@@ -22,6 +22,12 @@ func Test_ToolCall_Functional(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		clientInstance := client.Litellm{Config: getConfig(), Connection: getConn()}
 
+		tools, err := clientInstance.Tools(context.Background())
+		assert.NoError(t, err)
+		if len(tools) == 0 {
+			t.Skip("no MCP tools available for the configured API key")
+		}
+
 		tool := common.ToolCallFunction{
 			Name: "current_time",
 			Arguments: common.Arguments{

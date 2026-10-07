@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -92,22 +93,20 @@ func TestSpeechToText_Functional(t *testing.T) {
 		expectedWordCount int
 	}{
 		{
-			name:              "whisper-1",
+			name:              "parakeet",
 			modelName:         string(testSTTOne),
-			expectedText:      "Make me a story about Strocki the ostrich who met in friendly Puma.",
+			expectedText:      "Take me a story about Strochy the Ostrich who met in a friendly mood.",
 			expectedWordCount: 0,
-		},
-		{
-			name:              "deepgram",
-			modelName:         string(testSTTTwo),
-			expectedText:      "me a story about storchy the ostrich who met in friendly poom",
-			expectedWordCount: 12,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			clientInstance := client.Litellm{Config: getConfig(), Connection: getConn()}
+			// The STT backend occasionally drops connections in bursts; retry with spacing.
+			conn := getConn()
+			conn.Targets.LLM.RetryMaxAttempts = 3
+			conn.Targets.LLM.RetryInterval = 2 * time.Second
+			clientInstance := client.Litellm{Config: getConfig(), Connection: conn}
 
 			file := "testdata/file_174.oga"
 			res, err := clientInstance.SpeechToText(

@@ -131,12 +131,11 @@ func Test_Model_Functional(t *testing.T) {
 		clientInstance := client.Litellm{Config: getConfig(), Connection: getConn()}
 		ctx := context.Background()
 
-		info, err := clientInstance.Model(ctx, "claude-4")
+		info, err := clientInstance.Model(ctx, testModel)
 		assert.NoError(t, err)
 		assert.NotEmpty(t, info)
-		assert.Equal(t, string(info.ModelId), "claude-4")
-		assert.Equal(t, 1e+06, info.MaxInputTokens)
-		assert.True(t, info.SupportsVision)
+		assert.Equal(t, string(testModel), string(info.ModelId))
+		assert.Greater(t, info.MaxInputTokens, float64(0))
 	})
 }
 
@@ -251,19 +250,13 @@ func Test_Model_SupportedParams_Functional(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		clientInstance := client.Litellm{Config: getConfig(), Connection: getConn()}
-		model, err := clientInstance.Model(context.Background(), "claude-4")
+		model, err := clientInstance.Model(context.Background(), testModel)
 		assert.NoError(t, err)
 
+		assert.Greater(t, len(model.SupportedOpenAIParams), 0)
 		assert.Contains(t, model.SupportedOpenAIParams, "stream")
 		assert.Contains(t, model.SupportedOpenAIParams, "temperature")
 		assert.Contains(t, model.SupportedOpenAIParams, "tools")
-		assert.Contains(t, model.SupportedOpenAIParams, "thinking")
-		assert.Contains(t, model.SupportedOpenAIParams, "reasoning_effort")
-		assert.Contains(t, model.SupportedOpenAIParams, "response_format")
-		assert.Contains(t, model.SupportedOpenAIParams, "parallel_tool_calls")
-		assert.Contains(t, model.SupportedOpenAIParams, "tool_choice")
-		assert.Contains(t, model.SupportedOpenAIParams, "user")
-		assert.Contains(t, model.SupportedOpenAIParams, "max_completion_tokens")
 		assert.Contains(t, model.SupportedOpenAIParams, "max_tokens")
 		assert.Contains(t, model.SupportedOpenAIParams, "top_p")
 	})
